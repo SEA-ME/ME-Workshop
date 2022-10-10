@@ -1,0 +1,24 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: iothub
+spec:
+  type: bindings.azure.eventhubs
+  version: v1
+  metadata:
+  - name: connectionString
+    secretKeyRef:
+        name: connectionStrings
+        key:  iothub
+  - name: consumerGroup
+    value: "$Default"
+  - name: storageAccountName
+    value: "hackecosystemstorage"
+  - name: storageAccountKey
+    secretKeyRef:
+      name: keys
+      key:  storageaccountkey
+  - name: storageContainerName
+    value: "eventcontainer"
+auth:
+  secretStore: secrets
