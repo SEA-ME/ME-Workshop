@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"appId": "carsharing-app",
+			"appPort": 9005,
+			"label": "dapr-debug",
+			"type": "dapr",
+			"args": ["-d ./components --dapr-grpc-port 9005"]
+		},
+		{
+			"appId": "carsharing-app",
+			"label": "daprd-down",
+			"type": "daprd-down"
+		}
+	]
+}
