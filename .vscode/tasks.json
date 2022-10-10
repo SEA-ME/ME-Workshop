@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"appId": "carsharing-app",
-			"appPort": 9005,
+			"appPort": 8080,
 			"label": "dapr-debug",
 			"type": "dapr",
 			"args": ["-d ./components --dapr-grpc-port 9005"]

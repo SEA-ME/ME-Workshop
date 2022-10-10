@@ -25,7 +25,7 @@ type DeviceCommand struct {
 }
 
 func main() {
-	s := daprd.NewService("9005")
+	s := daprd.NewService("8080")
 
 	if err := s.AddBindingInvocationHandler("iothub", telemetryHandler); err != nil {
 		log.Fatalf("Unable to subcribe to telemetry: %v", err)
@@ -43,7 +43,7 @@ func invokeMethodOnDevice(deviceId string, deviceCommand DeviceCommand) {
 		log.Fatalf("Unable to create dapr client: %v", err)
 	}
 
-	keys, err := client.GetSecret(context.Background(), "secrets", "keys")
+	keys, err := client.GetSecret(context.Background(), "secrets", "keys", nil)
 
 	if err != nil {
 		log.Fatalf("Unable to fetch iot hub invoke authorization info: %v", err)
