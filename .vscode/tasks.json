@@ -4,9 +4,11 @@
 		{
 			"appId": "carsharing-app",
 			"appPort": 8080,
+			"grpcPort": 50001,
+			"httpPort": 9005,
 			"label": "dapr-debug",
 			"type": "dapr",
-			"args": ["-d ./components --dapr-grpc-port 9005"]
+			"args": ["-d ./components"]
 		},
 		{
 			"appId": "carsharing-app",
