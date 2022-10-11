@@ -13,6 +13,12 @@ import (
 	dapr "github.com/dapr/go-sdk/client"
 )
 
+type DeviceInvocationResult struct {
+	StatusCode int
+	Result     bool
+	Data       string
+}
+
 type DeviceTelemetryData struct {
 	FunctionalLocation string
 	ReturnArea         string
@@ -28,7 +34,7 @@ type DeviceCommand struct {
 }
 
 type Device interface {
-	InvokeMethod(deviceCommand DeviceCommand)
+	InvokeMethod(deviceCommand DeviceCommand) DeviceInvocationResult
 }
 
 type IoTHubDevice struct {
@@ -49,7 +55,12 @@ func main() {
 	}
 }
 
-func (d IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) {
+func (d IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) DeviceInvocationResult {
+	invocationResult := DeviceInvocationResult{
+		StatusCode: 500,
+		Result:     false,
+	}
+
 	client, err := dapr.NewClient()
 
 	if err != nil {
@@ -77,11 +88,20 @@ func (d IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) {
 				},
 				Data: data,
 			}
-			client.InvokeBinding(context.Background(), req)
+			if out, err := client.InvokeBinding(context.Background(), req); err != nil {
+				log.Fatalf("unable to call IoTHub: %v", err)
+			} else {
+				if err := json.Unmarshal(out.Data, &invocationResult); err == nil {
+					invocationResult.StatusCode = 200
+					invocationResult.Result = true
+				}
+			}
+			return invocationResult
 		}
 	} else {
 		log.Fatalf("Secrets do not contain reference for SAS authorization to IoT Hub.")
 	}
+	return invocationResult
 }
 
 func routeCommands(deviceToCommand Device, data []byte) {
