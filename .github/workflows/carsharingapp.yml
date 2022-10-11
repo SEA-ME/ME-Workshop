@@ -23,8 +23,8 @@ jobs:
 
     - name: Build
       working-directory: ./src
-      run: go build -v ./src/main.go
+      run: go build -v main.go
 
     - name: Test
       working-directory: ./src
-      run: go test -v ./src/main.go
+      run: go test -v main.go
