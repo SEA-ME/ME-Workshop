@@ -24,8 +24,10 @@ type DeviceCommand struct {
 	Payload                  map[string]string
 }
 
+const SERVICE_PORT int = 8080
+
 func main() {
-	s := daprd.NewService("8080")
+	s := daprd.NewService(fmt.Sprintf(":%d", SERVICE_PORT))
 
 	if err := s.AddBindingInvocationHandler("iothub", telemetryHandler); err != nil {
 		log.Fatalf("Unable to subcribe to telemetry: %v", err)
