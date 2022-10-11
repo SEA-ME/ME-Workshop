@@ -104,7 +104,7 @@ func (d IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) DeviceInvocation
 	return invocationResult
 }
 
-func routeCommands(deviceToCommand Device, data []byte) {
+func routeCommands(deviceToCommand Device, data []byte) bool {
 	//Currently not used... implement business logic to use the data
 	var deviceTelemetryData DeviceTelemetryData
 	if err := json.Unmarshal(data, &deviceTelemetryData); err != nil {
@@ -112,11 +112,12 @@ func routeCommands(deviceToCommand Device, data []byte) {
 	}
 
 	//Invoke remote hub
-	deviceToCommand.InvokeMethod(DeviceCommand{
+	result := deviceToCommand.InvokeMethod(DeviceCommand{
 		MethodName:               "drive",
 		ResponseTimeoutInSeconds: 200,
 		Payload:                  data,
 	})
+	return result.Result
 }
 
 func telemetryHandler(ctx context.Context, in *common.BindingEvent) (out []byte, err error) {
