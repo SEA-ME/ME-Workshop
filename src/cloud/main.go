@@ -24,7 +24,7 @@ type DeviceCommand struct {
 	DeviceId                 string
 	MethodName               string
 	ResponseTimeoutInSeconds int
-	Payload                  map[string]string
+	Payload                  []byte
 }
 
 type Device interface {
@@ -49,7 +49,7 @@ func main() {
 	}
 }
 
-func (d *IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) {
+func (d IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) {
 	client, err := dapr.NewClient()
 
 	if err != nil {
@@ -84,15 +84,25 @@ func (d *IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) {
 	}
 }
 
+func routeCommands(deviceToCommand Device, data []byte) {
+	//Currently not used... implement business logic to use the data
+	var deviceTelemetryData DeviceTelemetryData
+	if err := json.Unmarshal(data, &deviceTelemetryData); err != nil {
+		log.Fatalf("Unable to parse device telemetry data from event: %v", err)
+	}
+
+	//Invoke remote hub
+	deviceToCommand.InvokeMethod(DeviceCommand{
+		MethodName:               "drive",
+		ResponseTimeoutInSeconds: 200,
+		Payload:                  data,
+	})
+}
+
 func telemetryHandler(ctx context.Context, in *common.BindingEvent) (out []byte, err error) {
 	log.Printf("binding - Data:%s, Meta:%v", in.Data, in.Metadata)
 
 	if deviceId, hasDeviceId := in.Metadata["Iothub-Connection-Device-Id"]; hasDeviceId {
-
-		var deviceTelemetryData DeviceTelemetryData
-		if err := json.Unmarshal(in.Data, &deviceTelemetryData); err != nil {
-			log.Fatalf("Unable to parse device telemetry data from event: %v", err)
-		}
 
 		//call device to do something
 
@@ -102,13 +112,7 @@ func telemetryHandler(ctx context.Context, in *common.BindingEvent) (out []byte,
 			DeviceId: deviceId,
 		}
 
-		device.InvokeMethod(DeviceCommand{
-			MethodName:               "drive",
-			ResponseTimeoutInSeconds: 200,
-			Payload: map[string]string{
-				"parkinglot": "p1",
-			},
-		})
+		routeCommands(device, in.Data)
 
 		//check...
 
