@@ -35,14 +35,6 @@ type IoTHubDevice struct {
 	DeviceId string
 }
 
-type MockedDevice struct {
-	DeviceId string
-}
-
-func (d *MockedDevice) InvokeMethod(deviceCommand DeviceCommand) {
-	log.Println("test")
-}
-
 const SERVICE_PORT int = 8080
 
 func main() {
@@ -109,12 +101,6 @@ func telemetryHandler(ctx context.Context, in *common.BindingEvent) (out []byte,
 		device := IoTHubDevice{
 			DeviceId: deviceId,
 		}
-
-		/*
-			mockedDevice := MockedDevice{
-				DeviceId: deviceId,
-			}
-		*/
 
 		device.InvokeMethod(DeviceCommand{
 			MethodName:               "drive",
