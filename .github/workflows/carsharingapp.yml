@@ -27,4 +27,4 @@ jobs:
 
     - name: Test
       working-directory: ./src/cloud
-      run: go test -v main.go
+      run: go test
