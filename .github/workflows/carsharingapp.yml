@@ -22,9 +22,9 @@ jobs:
         go-version: 1.18
 
     - name: Build
-      working-directory: ./src
+      working-directory: ./src/cloud
       run: go build -v main.go
 
     - name: Test
-      working-directory: ./src
+      working-directory: ./src/cloud
       run: go test -v main.go
