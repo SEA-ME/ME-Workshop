@@ -2,13 +2,25 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"type": "shell",
+			"label": "go install",
+			"command": "go install",
+			"options": {
+			  "cwd": "${workspaceFolder}"
+			},
+			"presentation": {
+			  "close": true
+			}
+		},
+		{
 			"appId": "carsharing-app",
 			"appPort": 8080,
 			"grpcPort": 50001,
 			"httpPort": 9005,
+			"componentsPath": "./dapr-components-local",
 			"label": "dapr-debug",
 			"type": "dapr",
-			"args": ["-d ./components"]
+			"dependsOn": ["go install"],
 		},
 		{
 			"appId": "carsharing-app",

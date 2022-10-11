@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package with Dapr with Dapr",
+            "name": "Launch Package with Dapr",
             "type": "go",
             "request": "launch",
             "mode": "debug",
