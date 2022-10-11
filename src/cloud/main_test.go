@@ -1,36 +1,50 @@
 package main
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 type MockedDevice struct {
 	DeviceId string
+
+	ReceivedDeviceCommand DeviceCommand
+
+	ReturnValue string
 }
 
-func (d *MockedDevice) InvokeMethod(deviceCommand DeviceCommand) string {
-
-	if deviceCommand.Payload["parkinglot"] == "p1" {
-		return "positive"
-	} else {
-		return "negative"
+func (d MockedDevice) InvokeMethod(deviceCommand DeviceCommand) DeviceInvocationResult {
+	return DeviceInvocationResult{
+		StatusCode: 200,
+		Result:     true,
 	}
 }
 
 func TestAdd(t *testing.T) {
+
+	// Arrange
 	deviceId := "hello"
 	mockedDevice := MockedDevice{
-		DeviceId: deviceId,
+		DeviceId:    deviceId,
+		ReturnValue: "positive",
 	}
 
-	got := mockedDevice.InvokeMethod(DeviceCommand{
-		MethodName:               "drive",
-		ResponseTimeoutInSeconds: 200,
-		Payload: map[string]string{
-			"parkinglot": "p1",
-		},
-	})
-	want := "positive"
+	telemtryToTest := DeviceTelemetryData{
+		FunctionalLocation: "test",
+		ReturnArea:         "test",
+		CurrentTask:        "test",
+		ControlType:        "test",
+	}
+	data, _ := json.Marshal(telemtryToTest)
+	want := true
+	// Act
+	result := routeCommands(mockedDevice, data)
 
-	if got != want {
-		t.Errorf("got %q, wanted %q", got, want)
+	// Assert
+	got := result
+
+	if got == want {
+	} else {
+		t.Error()
 	}
 }
