@@ -124,17 +124,11 @@ func telemetryHandler(ctx context.Context, in *common.BindingEvent) (out []byte,
 
 	if deviceId, hasDeviceId := in.Metadata["Iothub-Connection-Device-Id"]; hasDeviceId {
 
-		//call device to do something
-
-		//Decission logic tbd
-
 		device := IoTHubDevice{
 			DeviceId: deviceId,
 		}
 
 		routeCommands(device, in.Data)
-
-		//check...
 
 	} else {
 		log.Fatal("Unable to read the deviceId from event.")
