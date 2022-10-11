@@ -13,19 +13,40 @@ import (
 	dapr "github.com/dapr/go-sdk/client"
 )
 
-type DeviceTelemetry struct {
-	DeviceId string
-	Payload  string
+type DeviceTelemetryData struct {
+	FunctionalLocation string
+	ReturnArea         string
+	CurrentTask        string
+	ControlType        string
 }
 
 type DeviceCommand struct {
+	DeviceId                 string
 	MethodName               string
 	ResponseTimeoutInSeconds int
 	Payload                  map[string]string
 }
 
+type Device interface {
+	InvokeMethod(deviceCommand DeviceCommand)
+}
+
+type IoTHubDevice struct {
+	DeviceId string
+}
+
+type MockedDevice struct {
+	DeviceId string
+}
+
+func (d *MockedDevice) InvokeMethod(deviceCommand DeviceCommand) {
+	log.Println("test")
+}
+
+const SERVICE_PORT int = 8080
+
 func main() {
-	s := daprd.NewService("8080")
+	s := daprd.NewService(fmt.Sprintf(":%d", SERVICE_PORT))
 
 	if err := s.AddBindingInvocationHandler("iothub", telemetryHandler); err != nil {
 		log.Fatalf("Unable to subcribe to telemetry: %v", err)
@@ -36,7 +57,7 @@ func main() {
 	}
 }
 
-func invokeMethodOnDevice(deviceId string, deviceCommand DeviceCommand) {
+func (d *IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) {
 	client, err := dapr.NewClient()
 
 	if err != nil {
@@ -74,25 +95,40 @@ func invokeMethodOnDevice(deviceId string, deviceCommand DeviceCommand) {
 func telemetryHandler(ctx context.Context, in *common.BindingEvent) (out []byte, err error) {
 	log.Printf("binding - Data:%s, Meta:%v", in.Data, in.Metadata)
 
-	var deviceTelemetry DeviceTelemetry
+	if deviceId, hasDeviceId := in.Metadata["Iothub-Connection-Device-Id"]; hasDeviceId {
 
-	if err := json.Unmarshal(in.Data, &deviceTelemetry); err != nil {
-		log.Fatalf("Unable to parse device telemetry event: %v", err)
+		var deviceTelemetryData DeviceTelemetryData
+		if err := json.Unmarshal(in.Data, &deviceTelemetryData); err != nil {
+			log.Fatalf("Unable to parse device telemetry data from event: %v", err)
+		}
+
+		//call device to do something
+
+		//Decission logic tbd
+
+		device := IoTHubDevice{
+			DeviceId: deviceId,
+		}
+
+		/*
+			mockedDevice := MockedDevice{
+				DeviceId: deviceId,
+			}
+		*/
+
+		device.InvokeMethod(DeviceCommand{
+			MethodName:               "drive",
+			ResponseTimeoutInSeconds: 200,
+			Payload: map[string]string{
+				"parkinglot": "p1",
+			},
+		})
+
+		//check...
+
+	} else {
+		log.Fatal("Unable to read the deviceId from event.")
 	}
-
-	//call device to do something
-
-	//Decission logic tbd
-
-	invokeMethodOnDevice(deviceTelemetry.DeviceId, DeviceCommand{
-		MethodName:               "drive",
-		ResponseTimeoutInSeconds: 200,
-		Payload: map[string]string{
-			"parkinglot": "p1",
-		},
-	})
-
-	//check...
 
 	return nil, nil
 }
