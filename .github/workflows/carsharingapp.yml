@@ -5,7 +5,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'src/cloud/'
+      - 'src/cloud/**'
   pull_request:
     branches: [ "main" ]
 
