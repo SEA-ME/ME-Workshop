@@ -1,5 +1,7 @@
 name: CarSharing App Build and Deploy
 
+# TODO: split this up into infra deployment and app deployment !!!
+
 on:
   push:
     branches: [main]
