@@ -7,10 +7,6 @@ import (
 
 type MockedDevice struct {
 	DeviceId string
-
-	ReceivedDeviceCommand DeviceCommand
-
-	ReturnValue string
 }
 
 func (d MockedDevice) InvokeMethod(deviceCommand DeviceCommand) DeviceInvocationResult {
@@ -22,18 +18,14 @@ func (d MockedDevice) InvokeMethod(deviceCommand DeviceCommand) DeviceInvocation
 
 func TestAdd(t *testing.T) {
 
-	// Arrange
-	deviceId := "hello"
 	mockedDevice := MockedDevice{
-		DeviceId:    deviceId,
-		ReturnValue: "positive",
+		DeviceId: "mockeddevice",
 	}
 
 	telemtryToTest := DeviceTelemetryData{
-		FunctionalLocation: "test",
-		ReturnArea:         "test",
+		FunctionalLocation: "Reception Area", //Reception Area, Pickup Area, Parking Lot
 		CurrentTask:        "test",
-		ControlType:        "test",
+		ControlType:        "Manual",
 	}
 	data, _ := json.Marshal(telemtryToTest)
 	want := true
