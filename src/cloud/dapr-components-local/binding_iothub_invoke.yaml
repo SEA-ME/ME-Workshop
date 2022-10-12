@@ -1,7 +1,7 @@
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
-  name: iothub_invoke
+  name: iothub-invoke
 spec:
   type: bindings.http
   version: v1

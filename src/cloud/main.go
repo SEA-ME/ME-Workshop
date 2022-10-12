@@ -79,7 +79,7 @@ func (d IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) DeviceInvocation
 			log.Fatalf("Unable to parse device command: %v", deviceCommand)
 		} else {
 			req := &dapr.InvokeBindingRequest{
-				Name:      "iothub_invoke",
+				Name:      "iothub-invoke",
 				Operation: "post",
 				Metadata: map[string]string{
 					"path":          fmt.Sprintf("%v/methods?api-version=2021-04-12", "device1"),
