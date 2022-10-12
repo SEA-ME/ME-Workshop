@@ -30,7 +30,7 @@ type DeviceCommand struct {
 	DeviceId                 string
 	MethodName               string
 	ResponseTimeoutInSeconds int
-	Payload                  []byte
+	Payload                  map[string]string
 }
 
 type Device interface {
@@ -111,13 +111,23 @@ func routeCommands(deviceToCommand Device, data []byte) bool {
 		log.Fatalf("Unable to parse device telemetry data from event: %v", err)
 	}
 
-	//Invoke remote hub
-	result := deviceToCommand.InvokeMethod(DeviceCommand{
-		MethodName:               "drive",
-		ResponseTimeoutInSeconds: 200,
-		Payload:                  data,
-	})
-	return result.Result
+	if deviceTelemetryData.FunctionalLocation == "Reception Area" {
+		//Invoke remote hub
+
+		//TODO: Add logic to decide which parking lot to select as location
+
+		log.Println("Vehicle arrived and reception area. Sending it to parking")
+		result := deviceToCommand.InvokeMethod(DeviceCommand{
+			MethodName:               "drive",
+			ResponseTimeoutInSeconds: 200,
+			Payload: map[string]string{
+				"location": "parking2",
+			},
+		})
+		return result.Result
+	}
+
+	return false
 }
 
 func telemetryHandler(ctx context.Context, in *common.BindingEvent) (out []byte, err error) {
