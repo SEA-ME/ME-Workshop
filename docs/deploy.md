@@ -42,6 +42,13 @@ Note: You need to have [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/i
         identityObjectId=<clientId>
     ```
 
+3. Deploy application
+
+    ```azurecli-interactive
+    az deployment group create -g <group> -f ./deploy/app/main.bicep \
+        -p \
+        containerImage=<acrName>.azurecr.io/containerapps-helloworld:latest
+    ```
 
 ## Deploy via GitHub Actions
 

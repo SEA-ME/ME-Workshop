@@ -10,6 +10,6 @@ COPY *.go ./
 
 RUN go build -o /carsharing-app
 
-EXPOSE 9005
+EXPOSE 8080
 
 CMD [ "/carsharing-app" ]
