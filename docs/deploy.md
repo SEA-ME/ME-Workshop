@@ -37,7 +37,9 @@ Note: You need to have [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/i
 
     ```azurecli-interactive
     az group create -g <group> -l canadacentral
-    az deployment group create -g <group> -f ./deploy/infrastructure/main.bicep
+    az deployment group create -g <group> -f ./deploy/infrastructure/main.bicep \
+        -p \
+        identityObjectId=<clientId>
     ```
 
 

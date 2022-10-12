@@ -3,6 +3,9 @@ param environmentName string = 'env-${uniqueString(resourceGroup().id)}'
 @description('The datacenter to use for the deployment.')
 param location string = resourceGroup().location
 
+@description('Specifies the object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. Get it by using Get-AzADUser or Get-AzADServicePrincipal cmdlets.')
+param identityObjectId string
+
 @minLength(5)
 @maxLength(50)
 @description('Provide a globally unique name of your Azure Container Registry')
@@ -17,6 +20,9 @@ var storageAccountName = '${toLower(projectName)}${uniqueString(resourceGroup().
 var storageContainerName = 'checkpoints'
 
 var iotHubName = '${projectName}Hub${uniqueString(resourceGroup().id)}'
+
+@description('Specifies the name of the key vault.')
+param keyVaultName string = '${projectName}KV'
 
 // Storage
 module storage 'storage.bicep' = {
@@ -57,6 +63,14 @@ module environment 'environment.bicep' = {
   }
 }
 
-output IoTHubEventHubCompatibleConnectionString string = iothub.outputs.IoTHubEventHubCompatibleConnectionString
-output IoTHubSharedAccessSignature string = iothub.outputs.IoTHubSharedAccessSignature
-
+// Key Vault
+module keyvault 'keyvault.bicep' = {
+  name: '${deployment().name}--keyvault'
+  params: {
+    keyVaultName: keyVaultName
+    objectId: identityObjectId
+    IoTHubEventHubCompatibleConnectionString: iothub.outputs.IoTHubEventHubCompatibleConnectionString
+    IoTHubSharedAccessSignature: iothub.outputs.IoTHubSharedAccessSignature
+    location: location
+  }
+}
