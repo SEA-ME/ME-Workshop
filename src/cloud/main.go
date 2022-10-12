@@ -83,7 +83,7 @@ func (d IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) DeviceInvocation
 		}
 	*/
 
-	auth := os.Getenv("iothub_sharedaccesskey")
+	auth := os.Getenv("IoTHubSharedAccessSignature")
 
 	if auth != "" {
 
