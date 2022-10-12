@@ -1,4 +1,4 @@
-name: Go
+name: CarSharing App Tests
 
 on:
   workflow_dispatch:
