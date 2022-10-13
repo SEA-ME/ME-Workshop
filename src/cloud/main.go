@@ -78,6 +78,8 @@ func (d IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) DeviceInvocation
 			log.Fatalf("Unable to fetch iot hub invoke authorization info: %v", err)
 		}
 
+		//Integrate into exisitng impl
+
 		if auth, hasKey := keys["iothub_sharedaccesskey"]; !hasKey {
 			log.Fatalf("Unable to load iot hub SAS key from secret store.")
 		}
