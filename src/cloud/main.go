@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/dapr/go-sdk/service/common"
 	daprd "github.com/dapr/go-sdk/service/http"
@@ -68,26 +67,13 @@ func (d IoTHubDevice) InvokeMethod(deviceCommand DeviceCommand) DeviceInvocation
 		log.Fatalf("Unable to create dapr client: %v", err)
 	}
 
-	/*
+	keys, err := client.GetSecret(context.Background(), "secrets", "keys", nil)
 
-		//TODO: Uncomment if secret store is available in azure container apps
+	if err != nil {
+		log.Fatalf("Unable to fetch iot hub invoke authorization info: %v", err)
+	}
 
-		keys, err := client.GetSecret(context.Background(), "secrets", "keys", nil)
-
-		if err != nil {
-			log.Fatalf("Unable to fetch iot hub invoke authorization info: %v", err)
-		}
-
-		//Integrate into exisitng impl
-
-		if auth, hasKey := keys["iothub_sharedaccesskey"]; !hasKey {
-			log.Fatalf("Unable to load iot hub SAS key from secret store.")
-		}
-	*/
-
-	auth := os.Getenv("IoTHubSharedAccessSignature")
-
-	if auth != "" {
+	if auth, hasKey := keys["iothub_sharedaccesskey"]; !hasKey {
 
 		if data, err := json.Marshal(deviceCommand); err != nil {
 			log.Fatalf("Unable to parse device command: %v", deviceCommand)
